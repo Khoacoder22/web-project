@@ -7,6 +7,7 @@ import './check.css';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import moment from 'moment'; // Thêm thư viện moment để xử lý ngày tháng
 
 const Checkout = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -83,6 +84,11 @@ const Checkout = () => {
     }
   };
 
+  // Điều kiện kiểm tra ngày hết hạn
+  const disabledDate = (current) => {
+    return current && current < moment().endOf('day');
+  };
+
   return (
     <>
       <ToastContainer /> {/* Đặt ToastContainer để hiển thị thông báo toast */}
@@ -133,9 +139,12 @@ const Checkout = () => {
               className="visa"
               label="Visa Card Number"
               name="cardNumber"
-              rules={[{ required: true, message: 'Please input your Visa card number!' }]}
+              rules={[
+                { required: true, message: 'Please input your Visa card number!' },
+                { min: 4, message: 'Card number must be at least 4 digits!' }, // Kiểm tra ít nhất 4 số
+              ]}
             >
-              <Input placeholder="Enter card number" />
+              <Input placeholder="Enter card number" maxLength={16} />
             </Form.Item>
             <Form.Item
               label="Expiration Date"
@@ -147,6 +156,7 @@ const Checkout = () => {
                 picker="month"
                 placeholder="Select expiration date"
                 style={{ width: '100%' }}
+                disabledDate={disabledDate} // Chỉ cho phép chọn ngày trong tương lai
               />
             </Form.Item>
             <Button style={{ width: '300px' }} type="primary" htmlType="submit">

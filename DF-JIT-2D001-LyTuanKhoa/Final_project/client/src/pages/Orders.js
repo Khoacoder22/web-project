@@ -83,6 +83,25 @@ const Orders = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        // Gọi API để lấy danh sách đơn hàng
+        const response = await axios.get('http://localhost:8080/api/orders', {
+          headers: {
+            Authorization: authHeader,
+          },
+        });
+        console.log(response.data); // Thêm dòng này để kiểm tra cấu trúc dữ liệu
+        setOrders(response.data); // Cập nhật đơn hàng với dữ liệu từ API
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
+  
+    fetchOrders(); // Gọi hàm lấy đơn hàng từ API khi component được tải
+  }, [authHeader]);
+  
   const orderColumns = [
     { title: 'Order ID', dataIndex: 'id', key: 'id' },
     { title: 'Customer', dataIndex: 'username', key: 'username' },
@@ -90,11 +109,13 @@ const Orders = () => {
     { title: 'Date', dataIndex: 'date', key: 'date' },
     {
       title: 'Products',
-      dataIndex: 'products',
-      key: 'products',
-      render: (products) => 
-        products ? products.map(p => `${p.name} (x${p.quantity})`).join(', ') : 'No products',
-    },
+      dataIndex: 'orderDetails',
+      key: 'orderDetails',
+      render: (orderDetails) => 
+        orderDetails
+          ? orderDetails.map(item => `${item.product.name} (x${item.quantity})`).join(', ')
+          : 'No products',
+    },    
     {
       title: 'Actions',
       key: 'actions',
