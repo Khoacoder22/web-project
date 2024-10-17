@@ -10,7 +10,7 @@ const initializeProducts = () => {
     if (storedProducts && storedProducts.every(p => p.id)) { 
         return storedProducts;
     } else {
-        const defaultProducts = []; // Khởi tạo sản phẩm mặc định nếu cần
+        const defaultProducts = [];
         localStorage.setItem('products', JSON.stringify(defaultProducts));
         return defaultProducts;
     }

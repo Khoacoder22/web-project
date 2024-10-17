@@ -13,7 +13,7 @@ const bookRecommendations = {
 };
 
 const RecommendBooks = ({ steps }) => {
-  const genre = steps.genre.value; // Thể loại mà người dùng chọn
+  const genre = steps.genre.value;
   const books = bookRecommendations[genre] || [];
   
   return (

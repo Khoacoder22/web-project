@@ -16,10 +16,28 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // API lấy danh sách sản phẩm
+    // API lấy danh sách sản phẩm với tính năng sắp xếp theo giá và tìm kiếm
     @GetMapping
-    public ResponseEntity<List<Product>> getProducts() {
-        List<Product> products = productService.getAllProducts();
+    public ResponseEntity<List<Product>> getProducts(
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "query", required = false) String query) {
+
+        List<Product> products;
+
+        // Kiểm tra có từ khóa tìm kiếm không
+        if (query != null && !query.isEmpty()) {
+            products = productService.searchBooks(query);
+        } else {
+            // Kiểm tra tham số "sort" và sắp xếp theo giá
+            if ("asc".equalsIgnoreCase(sort)) {
+                products = productService.getProductsSortedByPriceAsc();
+            } else if ("desc".equalsIgnoreCase(sort)) {
+                products = productService.getProductsSortedByPriceDesc();
+            } else {
+                products = productService.getAllProducts();
+            }
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(products);
     }
 

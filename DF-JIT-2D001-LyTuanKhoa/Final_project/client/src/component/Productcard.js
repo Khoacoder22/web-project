@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './Card.css';
 import { Form, Upload, Modal, Input, Button } from "antd";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,7 +6,7 @@ import { useCart } from '../contexts/CartContext';
 import { useProducts } from '../contexts/ProductContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-
+import './Card.css';
 
 const Card = ({ product }) => {
   const { addToCart } = useCart();
@@ -15,7 +14,6 @@ const Card = ({ product }) => {
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [editModalOpen, setEditOpen] = useState(false);
 
-  // Kiểm tra xem ảnh đã lưu trong localStorage hay chưa
   const localImage = localStorage.getItem(`product_image_${product.id}`);
   const [image, setImage] = useState(localImage || product.image || '');
 
@@ -28,62 +26,54 @@ const Card = ({ product }) => {
   });
 
   const { isAdmin } = useAuth();
-  const [form] = Form.useForm(); // Khởi tạo form từ Ant Design
+  const [form] = Form.useForm();
 
   const openDetailModal = () => setDetailModalOpen(true);
   const closeDetailModal = () => setDetailModalOpen(false);
 
   const openEditModal = () => {
     setEditOpen(true);
-    form.setFieldsValue(editProductInfo); // Đặt giá trị hiện tại của sản phẩm vào form
+    form.setFieldsValue(editProductInfo);
   };
+
   const closeEditModal = () => setEditOpen(false);
 
   const handleUpload = async (info) => {
     const reader = new FileReader();
     reader.onload = async (e) => {
-      const base64Image = e.target.result; // Đây là dữ liệu Base64
+      const base64Image = e.target.result;
       try {
-        // Lưu Base64 vào localStorage với key product_image_{product.id}
         localStorage.setItem(`product_image_${product.id}`, base64Image);
-
         toast.success("Image uploaded successfully");
-        setImage(base64Image); // Cập nhật hình ảnh trong UI
+        setImage(base64Image);
       } catch (error) {
         const message = error.response ? error.response.data.message : 'Unknown error';
         toast.error(`Failed to upload image: ${message}`);
       }
     };
-    reader.readAsDataURL(info.file); // Chuyển file ảnh thành Base64
+    reader.readAsDataURL(info.file);
   };
 
   const handleAddedToCart = () => {
     if (product && product.id) {
-        addToCart(product); // Gọi hàm addToCart từ CartContext
-        toast.success(`Product ${product.name} has been added to your cart`);
+      addToCart(product);
+      toast.success(`Product ${product.name} has been added to your cart`);
     } else {
-        toast.error('Product data is invalid');
+      toast.error('Product data is invalid');
     }
-};
+  };
 
   const handleEdit = (values) => {
-    // Cập nhật trạng thái `editProductInfo` với giá trị từ form
     const updatedProduct = { ...editProductInfo, ...values, image };
-
-    // Gọi hàm `editProduct` với giá trị đã cập nhật
     editProduct({ id: product.id, ...updatedProduct });
-
-    // Lưu lại hình ảnh sau khi chỉnh sửa
     localStorage.setItem(`product_image_${product.id}`, image);
-
-    // Cập nhật lại UI bằng cách thay đổi `editProductInfo` và `product`
     setEditProductInfo(updatedProduct);
     closeEditModal();
   };
 
   const handleDelete = () => {
     deleteProduct(product.id);
-    localStorage.removeItem(`product_image_${product.id}`); // Xóa ảnh khỏi localStorage
+    localStorage.removeItem(`product_image_${product.id}`);
     toast.success(`Product ${product.name} has been deleted`);
   };
 
@@ -152,14 +142,30 @@ const Card = ({ product }) => {
           onCancel={closeEditModal}
           footer={null}
         >
-          <Form form={form} onFinish={handleEdit} layout="vertical">
-            <Form.Item name="name" label="Product Name" rules={[{ required: true }]}>
+          <Form
+            form={form}
+            onFinish={handleEdit}
+            layout="vertical"
+            initialValues={editProductInfo}
+          >
+            <Form.Item
+              name="name"
+              label="Product Name"
+              rules={[{ required: true, message: 'Please enter the product name.' }]}
+            >
               <Input />
             </Form.Item>
-            <Form.Item name="price" label="Product Price" rules={[{ required: true }]}>
+            <Form.Item
+              name="price"
+              label="Product Price"
+              rules={[{ required: true, message: 'Please enter the product price.' }]}
+            >
               <Input type="number" />
             </Form.Item>
-            <Form.Item name="description" label="Product Description">
+            <Form.Item
+              name="description"
+              label="Product Description"
+            >
               <Input.TextArea />
             </Form.Item>
             <Button type="primary" htmlType="submit">Save</Button>

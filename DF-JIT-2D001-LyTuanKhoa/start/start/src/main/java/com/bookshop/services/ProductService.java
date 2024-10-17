@@ -19,56 +19,68 @@ public class ProductService {
     @Autowired
     private CartRepository cartRepository;
 
+    // Lấy tất cả sản phẩm
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+    // Lấy sản phẩm theo thứ tự tăng dần của giá
+    public List<Product> getProductsSortedByPriceAsc() {
+        return productRepository.findAllByOrderByPriceAsc();
+    }
+
+    // Lấy sản phẩm theo thứ tự giảm dần của giá
+    public List<Product> getProductsSortedByPriceDesc() {
+        return productRepository.findAllByOrderByPriceDesc();
+    }
+
+    // Tạo sản phẩm mới
     public Product createProduct(Product product) {
         return productRepository.save(product);
     }
 
+    // Cập nhật sản phẩm và đồng bộ với CartItem
     @Transactional
     public Product updateProduct(Long id, Product updatedProduct) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product != null) {
+        return productRepository.findById(id).map(product -> {
             product.setName(updatedProduct.getName());
             product.setPrice(updatedProduct.getPrice());
-            product = productRepository.save(product);
+            Product savedProduct = productRepository.save(product);
 
+            // Đồng bộ cập nhật sản phẩm trong các CartItem liên quan
             List<CartItem> cartItems = cartRepository.findByProductId(id);
             for (CartItem cartItem : cartItems) {
-                cartItem.setProduct(product);
+                cartItem.setProduct(savedProduct);
                 cartRepository.save(cartItem);
             }
-            return product;
-        }
-        return null;
+            return savedProduct;
+        }).orElse(null);
     }
 
+    // Xóa sản phẩm và các mục CartItem liên quan
     @Transactional
     public boolean deleteProduct(Long id) {
         if (productRepository.existsById(id)) {
             List<CartItem> cartItems = cartRepository.findByProductId(id);
-            for (CartItem cartItem : cartItems) {
-                cartRepository.delete(cartItem);
-            }
-
+            cartRepository.deleteAll(cartItems);
             productRepository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    // Thêm phương thức upload hình ảnh
+    // Tìm sản phẩm theo ID
     public Product findById(Long id) {
         return productRepository.findById(id).orElse(null);
     }
 
+    // Lưu sản phẩm sau khi tải lên hoặc cập nhật
     public Product save(Product product) {
         return productRepository.save(product);
     }
 
+    // Tìm kiếm sách theo từ khóa
     public List<Product> searchBooks(String query) {
-        return productRepository.findByNameContaining(query);
+        return productRepository.findByNameContainingIgnoreCase(query);
     }
 }

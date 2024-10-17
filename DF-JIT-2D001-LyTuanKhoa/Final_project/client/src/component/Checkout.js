@@ -61,12 +61,11 @@ const Checkout = () => {
         const updatedOrders = [...orders, newOrder];
         setOrders(updatedOrders);
         localStorage.setItem('orders', JSON.stringify(updatedOrders));
-        setCart([]); // Xóa giỏ hàng sau khi thanh toán thành công
-        
-        // Hiển thị thông báo thành công
+        setCart([]); 
+      
         toast.success('Payment completed successfully! Redirecting to shop...', {
           position: 'top-right',
-          autoClose: 3000, // Thông báo sẽ đóng sau 3 giây
+          autoClose: 3000, 
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -74,7 +73,6 @@ const Checkout = () => {
           progress: undefined,
         });
 
-        // Chuyển hướng về trang shop sau 3 giây
         setTimeout(() => {
           navigate('/shop');
         }, 3000);
@@ -84,14 +82,13 @@ const Checkout = () => {
     }
   };
 
-  // Điều kiện kiểm tra ngày hết hạn
   const disabledDate = (current) => {
     return current && current < moment().endOf('day');
   };
 
   return (
     <>
-      <ToastContainer /> {/* Đặt ToastContainer để hiển thị thông báo toast */}
+      <ToastContainer />
       {isNavigatedFromCart && (
         <Modal
           title="Enter Visa Information"
@@ -101,7 +98,7 @@ const Checkout = () => {
           closable={false}
           width={500}
         >
-          {/* Hiển thị sản phẩm trong giỏ hàng */}
+
           <div className="checkout-products">
             <h3>Products in your cart:</h3>
             <div className="product-list">
@@ -133,7 +130,6 @@ const Checkout = () => {
             </p>
           </div>
 
-          {/* Form nhập thông tin Visa */}
           <Form className="checkoutform" layout="vertical" onFinish={handleFinish}>
             <Form.Item
               className="visa"
@@ -141,7 +137,7 @@ const Checkout = () => {
               name="cardNumber"
               rules={[
                 { required: true, message: 'Please input your Visa card number!' },
-                { min: 4, message: 'Card number must be at least 4 digits!' }, // Kiểm tra ít nhất 4 số
+                { min: 4, message: 'Card number must be at least 4 digits!' }, 
               ]}
             >
               <Input placeholder="Enter card number" maxLength={16} />
@@ -156,7 +152,7 @@ const Checkout = () => {
                 picker="month"
                 placeholder="Select expiration date"
                 style={{ width: '100%' }}
-                disabledDate={disabledDate} // Chỉ cho phép chọn ngày trong tương lai
+                disabledDate={disabledDate} 
               />
             </Form.Item>
             <Button style={{ width: '300px' }} type="primary" htmlType="submit">

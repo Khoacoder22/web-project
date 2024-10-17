@@ -11,7 +11,7 @@ const SearchBar = ({ onSearch }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (onSearch) {
-      onSearch(searchQuery); // Gọi hàm onSearch từ props với từ khóa tìm kiếm
+      onSearch(searchQuery); 
     }
   };
 

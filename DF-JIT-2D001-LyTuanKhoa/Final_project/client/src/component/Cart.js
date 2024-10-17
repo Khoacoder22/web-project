@@ -8,18 +8,12 @@ import { useCart } from '../contexts/CartContext';
 import './Cart.css';
 
 const Cart = () => {
-  const { cart, setCart } = useCart();
+  const { cart, setCart, clearCart } = useCart(); // Thêm clearCart từ CartContext
   const { isAuthenticated } = useAuth();
   const [showLoginRequiredModal, setShowLoginRequiredModal] = useState(false);
   const [showEmptyCartModal, setShowEmptyCartModal] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (cart.length === 0) {
-      setShowEmptyCartModal(true);
-    }
-  }, [cart]);
-
+  
   useEffect(() => {
     if (cart.length === 0) {
       setShowEmptyCartModal(true);
@@ -117,7 +111,7 @@ const Cart = () => {
             <Table dataSource={cart} columns={columns} pagination={false} rowKey="id" />
             <div style={{ marginTop: '1rem', textAlign: 'right'}}>
               <p>Total Price: ${cart.reduce((total, product) => total + product.product.price * product.quantity, 0)}</p>
-              <Button danger onClick={() => setCart([])}><label>Clear Cart</label></Button>
+              <Button danger onClick={clearCart}><label>Clear Cart</label></Button> {/* Gọi hàm clearCart */}
               <Button type="primary" style={{ marginLeft: '1rem' }} onClick={handleCheckout}><label>Checkout</label></Button>
             </div>
           </>

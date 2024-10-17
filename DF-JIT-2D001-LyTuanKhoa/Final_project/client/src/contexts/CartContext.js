@@ -18,18 +18,6 @@ export const CartProvider = ({ children }) => {
     const { onProductChange } = useProducts();
     const [cart, setCart] = useState(initializeCart());
     const [orders, setOrders] = useState(initializeOrders());
-
-    useEffect(() => {
-        const fetchCart = async () => {
-            try {
-                const response = await axios.get('http://localhost:8080/api/cart');
-                setCart(response.data);
-            } catch (error) {
-                console.error('Error fetching cart:', error);
-            }
-        };
-        fetchCart();
-    }, []);
     
     useEffect(() => {
         console.log('Cart data:', cart);  

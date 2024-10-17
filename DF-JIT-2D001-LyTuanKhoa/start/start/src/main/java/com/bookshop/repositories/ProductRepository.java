@@ -8,6 +8,10 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    // Phương thức tìm kiếm sách theo tên
-    List<Product> findByNameContaining(String name);
+
+    List<Product> findAllByOrderByPriceAsc();
+
+    List<Product> findAllByOrderByPriceDesc();
+
+    List<Product> findByNameContainingIgnoreCase(String query);
 }
